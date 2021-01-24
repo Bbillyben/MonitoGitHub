@@ -204,27 +204,22 @@ class MonitoGitHub extends eqLogic {
             break;
          case "404 NOT FOUND":
             log::add('MonitoGitHub', 'error', '### Erreur, repo non trouvé ou privé ###');
-            //message::add('MonitoGitHub','Erreur, repo non trouvé');
             return false;
             break;  
          case '401 UNAUTHORIZED':
             log::add('MonitoGitHub', 'error', '### Utilisateur non enregistré - vérifiez le token ###');
-            //message::add('MonitoGitHub',' Erreur, Utilisateur non enregistré - vérifiez le token');
             return false;
             break; 
-            403 Forbidden
          case '403 FORBIDDEN':
             log::add('MonitoGitHub', 'error', '### Accès non authorisé ###');
-            //message::add('MonitoGitHub',' Erreur, Utilisateur non enregistré - vérifiez le token');
             return false;
             break; 
 
          default:
-            log::add('MonitoGitHub', 'error', "### Erreur non référencée $status ###");
-            //message::add('MonitoGitHub',' Erreur, Erreur non référencée');
+            log::add('MonitoGitHub', 'error', '### Erreur non référencée '.$status.' ###');
             return false;
             break; 
-
+            
       }
       return true;
 
