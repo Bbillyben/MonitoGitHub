@@ -3,7 +3,7 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('template');
+$plugin = plugin::byId('MonitoGitHub');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -121,14 +121,74 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 							<legend><i class="fas fa-cogs"></i> {{Paramètres}}</legend>
 							<div class="form-group">
-								<label class="col-sm-3 control-label">{{Paramètre n°1}}</label>
+								<label class="col-sm-3 control-label">{{Owner}}</label>
 								<div class="col-sm-7">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="param1" placeholder="{{Paramètre n°1}}"/>
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="owner" placeholder="{{owner}}"/>
 								</div>
 							</div>
-							<!-- Champ de saisie du cron d'auto-actualisation + assistant cron -->
-							<!-- La fonction cron de la classe du plugin doit contenir le code prévu pour que ce champ soit fonctionnel -->
 							<div class="form-group">
+								<label class="col-sm-3 control-label">{{Repo}}</label>
+								<div class="col-sm-7">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="repo" placeholder="{{repo}}"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{Path}}
+									<sup><i class="fas fa-question-circle tooltips" title="{{Si vide le repos sera la source<br>doit finir par '/' pour un dossier, si fini par le nom de fichier, seul celui-ci sera la source des infos<br>!! modifie les commandes crées !!}}"></i></sup>
+								</label>
+								<div class="col-sm-7">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="path" placeholder="{{/src/ or /src/myfile.js}}"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{Branche}}</label>
+								<div class="col-sm-7">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="branch" placeholder="{{master}}"/>
+								</div>
+							</div>
+
+							<legend><i class="fas fa-user	"></i> {{Identification}}</legend>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{Utilisateur}}</label>
+								<div class="col-sm-7">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="user" placeholder="{{username}}"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">{{Token}}</label>
+								<div class="col-sm-7">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="token" placeholder="{{token}}"/>
+								</div>
+							</div>
+
+							<!-- Champ de saisie du cron d'auto-actualisation + assistant cron -->
+							<!-- La fonction cron de la classe du plugin doit contenir le cod	e prévu pour que ce champ soit fonctionnel -->
+							<legend><i class="fas fa-clock"></i> {{Actualisation}}</legend>
+
+							<div class="form-group mgh-actu-type">
+								<label class="col-sm-3 control-label" >{{Fréquence d'actualisation}}</label>
+								<div class="col-sm-7">
+									<select id="sel_object" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="freq">
+										<option value="manual">{{Manuelle}}</option>
+										<option value="prog">{{Programmé}}</option>
+										<option value="* * * * *">{{Cron minute}}</option>
+										<option value="*/10 * * * *">{{Cron 10 minutes}}</option>
+										<option value="*/30 * * * *">{{Cron 30 minutes}}</option>
+										<option value="7 * * * *">{{Cron heure}}</option>
+										<option value="7 2 * * *">{{Cron Jour}}</option>
+
+										<!--<option value="cron1">{{Cron minute}}</option>
+										<option value="cron5">{{Cron 5 minutes}}</option>
+										<option value="cron15">{{Cron 15 minutes}}</option>
+										-->
+									</select>
+								</div>
+								<div class="col-sm-3"></div>
+								<div class="col-sm-7">
+									<span class="warning_manualupdate" style="color: orange;">le rafraichissements des données ne sera effectué qu'avec l'appel à la commande 'rafraichir'</span>
+								</div>
+							</div>
+							<div class="form-group mgh-actu-auto">
 								<label class="col-sm-3 control-label">{{Auto-actualisation}}
 									<sup><i class="fas fa-question-circle tooltips" title="{{Fréquence de rafraîchissement de l'équipement}}"></i></sup>
 								</label>
@@ -154,6 +214,29 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<img name="icon_visu" src="<?= $plugin->getPathImgIcon(); ?>" style="max-width:160px;"/>
 								</div>
 							</div>
+							<div class="form-group">
+								<div class="text-left">
+								<label class="col-sm-3 control-label" >{{lien repos surveillé}} :</label>
+								<span class="mgh-repos-url"></span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label" >{{Type equipement}}</label>
+								<div class="col-sm-7">
+									<select id="sel_object" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="typesurvey" disabled>
+										<option value="repos">Repo</option>
+										<option value="folder">Folder</option>
+										<option value="file">file</option>
+	
+									</select>
+								</div>
+							</div>
+							<!--<div class="form-group">
+								<label class="col-sm-3 control-label">{{Type equipement}} :</label>
+								<div class="col-sm-7">
+									<p type="text" class="eqLogicAttr" data-l1key="configuration" data-l2key="typesurvey"></p>
+								</div>
+							</div>-->
 						</div>
 					</fieldset>
 				</form>
@@ -187,6 +270,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div><!-- /.row row-overflow -->
 
 <!-- Inclusion du fichier javascript du plugin (dossier, nom_du_fichier, extension_du_fichier, id_du_plugin) -->
-<?php include_file('desktop', 'template', 'js', 'template');?>
+<?php include_file('desktop', 'MonitoGitHub', 'js', 'MonitoGitHub');?>
 <!-- Inclusion du fichier javascript du core - NE PAS MODIFIER NI SUPPRIMER -->
 <?php include_file('core', 'plugin.template', 'js');?>
