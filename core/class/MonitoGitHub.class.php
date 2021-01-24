@@ -72,6 +72,8 @@ class MonitoGitHub extends eqLogic {
          }
       }
    }
+
+   
     /*
      * Fonction exécutée automatiquement toutes les minutes par Jeedom
       public static function cron() {*
@@ -149,8 +151,13 @@ class MonitoGitHub extends eqLogic {
       // Commits
       log::add('MonitoGitHub', 'debug', '║ ║ ╔══════════ Updates Commits');
       $data=MGH_GHAPI::getCOMMIT_infos($owner, $repo, $path, $branch, $user, $token);
+      if(!$this->statusHandler($data['status'])){
+         log::add('MonitoGitHub', 'debug', '║ ║ ╚═══════════ ######## Request Status Error BREAK');
+         return;
+      }
       $this->updateCMDfromArray($data);
       log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates Commits');
+      
 
 
       // update des éléments spécifiques
@@ -158,11 +165,19 @@ class MonitoGitHub extends eqLogic {
          case 'repos':
             log::add('MonitoGitHub', 'debug', '║ ║ ╔══════════ Updates Pull Request');
             $data=MGH_GHAPI::getPR_infos($owner, $repo, $branch, $user, $token);
+            if(!$this->statusHandler($data['status'])){
+               log::add('MonitoGitHub', 'debug', '║ ║ ╚═══════════ ######## Request Status Error BREAK');
+               return;
+            }
             $this->updateCMDfromArray($data);
             log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates PR');
 
             log::add('MonitoGitHub', 'debug', '║ ║ ╔══════════ Updates Fork');
             $data=MGH_GHAPI::getFORK_infos($owner, $repo, $branch, $user, $token);
+            if(!$this->statusHandler($data['status'])){
+               log::add('MonitoGitHub', 'debug', '║ ║ ╚═══════════ ######## Request Status Error BREAK');
+               return;
+            }
             $this->updateCMDfromArray($data);
             log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates Fork');
          
@@ -180,6 +195,40 @@ class MonitoGitHub extends eqLogic {
       log::add('MonitoGitHub', 'debug', '║ ╚═══════════════════════ end refresh datas ══════════════════════');
 
     }
+
+     // status handler pour prendre les retours des requetes
+     public function statusHandler($status){
+      switch(strtoupper($status)){
+         case "200 OK":
+            return true;
+            break;
+         case "404 NOT FOUND":
+            log::add('MonitoGitHub', 'error', '### Erreur, repo non trouvé ou privé ###');
+            //message::add('MonitoGitHub','Erreur, repo non trouvé');
+            return false;
+            break;  
+         case '401 UNAUTHORIZED':
+            log::add('MonitoGitHub', 'error', '### Utilisateur non enregistré - vérifiez le token ###');
+            //message::add('MonitoGitHub',' Erreur, Utilisateur non enregistré - vérifiez le token');
+            return false;
+            break; 
+            403 Forbidden
+         case '403 FORBIDDEN':
+            log::add('MonitoGitHub', 'error', '### Accès non authorisé ###');
+            //message::add('MonitoGitHub',' Erreur, Utilisateur non enregistré - vérifiez le token');
+            return false;
+            break; 
+
+         default:
+            log::add('MonitoGitHub', 'error', "### Erreur non référencée $status ###");
+            //message::add('MonitoGitHub',' Erreur, Erreur non référencée');
+            return false;
+            break; 
+
+      }
+      return true;
+
+   }
 
 
     /*    ----- fonction pour mettre à jour les valeurs à partir d'un array 
