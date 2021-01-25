@@ -79,7 +79,7 @@ ex : https/github.com/TheOwner/TheRepo/blob/master/core/class/the.class.php
 
  en bloc code : 
  
-```
+```php
 $cmdId = str_replace("#","",$scenario->getRealTrigger()); // récupère l'id de la commande
 $scenario->setlog("id : ".$cmdId);
 
