@@ -249,7 +249,7 @@ class MGH_GHAPI {
 
    // retourne une valeur à partir d'un array si la clé exiiste sinon false
    public static function gvfa($arr, $val){
-      if(array_key_exists($val,$arr)){
+      if(is_array($arr) && array_key_exists($val,$arr)){
          return $arr[$val];
       }else{
          return false;
@@ -260,7 +260,7 @@ class MGH_GHAPI {
    public static function gvfaKR($arr, $valArr){
       $pointeur=$arr;
       foreach($valArr as $val){
-         if(array_key_exists($val,$pointeur)){
+         if(is_array($pointeur) && array_key_exists($val,$pointeur)){
             $pointeur = $pointeur[$val];
          }else{
             return false;
