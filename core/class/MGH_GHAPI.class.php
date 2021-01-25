@@ -31,17 +31,17 @@ class MGH_GHAPI {
 
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/commits';
-      $query='';
+      $query='?per_page=1';
+
       if ($path<>''){
-         $query .= 'path='.$path;
+         $query .= '&path='.$path;
       }
       if ($branch<>''){
-         $query .= (strlen($query)>0?'&':'').'sha='.$branch;
+         $query .= '&sha='.$branch;
       }
 
-      if(strlen($query)>0){
-         $url.="?".$query;
-      }
+      $url.=$query;
+      
 
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Commits URL :'.$url);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
@@ -64,6 +64,7 @@ class MGH_GHAPI {
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
 
       $dataJson=json_decode($result,true);
+// nbre de page
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
       $data['last_commit_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('commit','author','date')));
       $data['last_commit_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('commit','author','name'));
@@ -82,11 +83,11 @@ class MGH_GHAPI {
 
       // construction des headers
       $headers = MGH_GHAPI::getBaseHeader($user, $token);
-
+      $headersA=[];
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/pulls';
 
-      $query='?state=open&sort=created&direction=desc&per_page=100';
+      $query='?per_page=1&state=open&sort=created&direction=desc';
       
       if ($branch<>''){
          $query .= '&base='.$branch;
@@ -115,7 +116,7 @@ class MGH_GHAPI {
       $dataJson=json_decode($result,true);
 
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['pr_open_count']=count($dataJson);
+      $data['pr_open_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
       $data['pr_open_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('user','login'));
       $data['pr_open_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
       $data['pr_open_title']=MGH_GHAPI::gvfaKR($dataJson,0,array('title'));
@@ -130,7 +131,7 @@ class MGH_GHAPI {
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/pulls';
 
-      $query='?state=closed&sort=created&direction=desc&per_page=100';
+      $query='?state=closed&sort=created&direction=desc&per_page=1';
       
       if ($branch<>''){
          $query .= '&base='.$branch;
@@ -138,6 +139,7 @@ class MGH_GHAPI {
       $url.=$query;
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─── PR Closed URL :'.$url);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
+      $headersA=[];
       // construction de la requete
       $ch = curl_init();
       MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
@@ -152,7 +154,7 @@ class MGH_GHAPI {
       $dataJson=json_decode($result,true);
 
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['pr_closed_count']=count($dataJson);
+      $data['pr_closed_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
       $data['pr_closed_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('user','login'));
       $data['pr_closed_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('closed_at')));
       $data['pr_closed_title']=MGH_GHAPI::gvfaKR($dataJson,0,array('title'));
@@ -174,11 +176,11 @@ class MGH_GHAPI {
 
       // construction des headers
       $headers = MGH_GHAPI::getBaseHeader($user, $token);
-
+      $headersA=[];
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/forks';
 
-      $query='?sort=newest&per_page=100';
+      $query='?sort=newest&per_page=1';
       
       $url.=$query;
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─── FORK URL :'.$url);
@@ -197,7 +199,7 @@ class MGH_GHAPI {
       $dataJson=json_decode($result,true);
 
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['fork_count']=count($dataJson);
+      $data['fork_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
       $data['fork_name']=MGH_GHAPI::gvfaKR($dataJson,0,array('full_name'));
       $data['fork_owner']=MGH_GHAPI::gvfaKR($dataJson,0,array('owner','login'));
       $data['fork_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
@@ -271,6 +273,25 @@ class MGH_GHAPI {
 
       }
       return $pointeur;
+   }
+
+   // extrait le nombre de page dans l'entete
+   public static function extractPageNum($head,$key){
+      $headLink= MGH_GHAPI::gvfa($head, $key);
+
+      if (!$headLink)return 0;
+      $link=$headLink[0];
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ page count link : '.$link);
+      $matches = array();
+      preg_match('/.*"next".*page=([0-9]*).*"last".*/', $link, $matches);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─  Page count exrtact from :'.json_encode($matches));
+
+      if (count($matches) > 0 && is_numeric($matches[1])){
+         return $matches[1];
+      }else{
+         return 0;
+      }
+      
    }
    // retourne une valeur à partir d'un array si la suite de clé exiiste sinon false
    public static function countInArr($arr, $key, $value){
