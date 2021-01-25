@@ -50,12 +50,12 @@ ex : https/github.com/TheOwner/TheRepo/blob/master/core/class/the.class.php
  
  ## Identification 
  
- Permet de renseigné des identifiant. 
+ Permet de renseigner des identifiants. 
  l'utilisation d'un token est recommandé : 
  * pour augmenter le nombre de requêtes par heure possible (de 50 à 5000)
  * pour accéder au git privé
  
-  * __Utilisateur__ : Le nom de l'utilisateur - non utilisé, mais peut être utile pour ce futur développement
+  * __Utilisateur__ : Le nom de l'utilisateur - non utilisé, mais peut être utile pour de futurs développements
   * __token__ : Le token généré pour identifier l'utilisateur, il lui faut les droits en lecture
   
    
