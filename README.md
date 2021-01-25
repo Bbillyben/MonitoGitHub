@@ -106,8 +106,10 @@ Puis dans un bloc SI/Alors/Sinon
 `Si tag(delta)>0`
 
 et vous pouvez envoyer un message du type :
-```Nouveau commit sur trigger()
-en date de triggerValue()```
+```
+Nouveau commit sur trigger()
+en date de triggerValue()
+```
 
 
  
