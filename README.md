@@ -4,27 +4,27 @@
   <img width="100" src="/plugin_info/MonitoGitHub_icon.png">
 </p>
 
-Permet de retrouver des information sur des repos github, que ce soit sur le git en entier, un sous dossier ou encore un fichier spécifique
+Permet de retrouver des informations sur des repos github, que ce soit sur le git en entier, un sous dossier ou encore un fichier spécifique
 
 # |Elements monitorable|
 
 ### Pour tous les types :
 
 * la date du dernier commit
-* l'utilisateur qui a créer le dernier commit
+* l'utilisateur qui a créé le dernier commit
 * le nbre de commentaire sur le dernier commit
 
 
 ### Pour tous les repo :
-* le nombre de PR open 
+* le nombre de PR ouverts 
 * la date du dernier PR ouvert
 * l'utilisateur qui a ouvert le dernier PR
 * le titre du dernier PR ouvert
 
-* le nombre de PR fermé 
+* le nombre de PR fermés
 * la date du dernier PR fermé
-* l'utilisateur qui a fermé le dernier PR
-* le titre du dernier PR
+* l'auteur du dernier PR fermé
+* le titre du dernier PR fermé
 
 * le nombre de Fork
 * le nom du dernier Fork
@@ -46,7 +46,7 @@ ex : https/github.com/TheOwner/TheRepo/blob/master/core/class/the.class.php
  * __Owner__ : Le nom du propriétaire du Git (aka TheOwner)
  * __repo__ : Le nom du repo Git (aka TheRepo)
  * __Path__ : Le chemin vers la source à monitorer, relatif à la racine du git (ici /core/class/the.class.php)
- * __Branche__ : la branche à monitoré (prendra par défaut la branche par défaut du git)
+ * __Branche__ : la branche a monitorer (prendra par défaut la branche par défaut du git)
  
  ## Identification 
  
@@ -61,21 +61,21 @@ ex : https/github.com/TheOwner/TheRepo/blob/master/core/class/the.class.php
    
  ## Actualisation
  
- Pour définir la fréquence d'actualisation des information de l'équipement
+ Pour définir la fréquence d'actualisation des informations de l'équipement
  
  Fréquence d'actualisation : 
- * __Manuelle__ : ne s'autoactualise pas => nécessité d'appeler la commande 'Update' de l'équipement
+ * __Manuelle__ : ne s'autoactualise pas => nécessite d'appeler la commande 'Update' de l'équipement
  * __CRON XXX__ : s'actualiser tous les 'XXX' (minutes, heures, jour)
  * __programmé__ : permet de définir un cron spécifique 
  
  
  # Exemple de bloc code pour tester l'arrivée d'un nouveau commit
- Merci Jeandhom!
+ Merci [Jeandhom](https://community.jeedom.com/t/obtenir-lavant-derniere-valeur-laststate/36412/2)!
  
  A mettre en déclencheur d'un scénario : la commande *'Date dern commit'*
  Il faut historiser cette valeur
  
-> Ce bloc permet de mettre plusieurs date en surveillance, l'historique est récupéré à partir du déclencheur
+> Ce bloc permet de mettre plusieurs dates en surveillance, l'historique est récupéré à partir du déclencheur
 
  en bloc code : 
  
@@ -106,8 +106,8 @@ Puis dans un bloc SI/Alors/Sinon
 `Si tag(delta)>0`
 
 et vous pouvez envoyer un message du type :
-`Nouveau commit sur trigger()
-en date de triggerValue()`
+```Nouveau commit sur trigger()
+en date de triggerValue()```
 
 
  
