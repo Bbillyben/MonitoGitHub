@@ -73,53 +73,6 @@ class MonitoGitHub extends eqLogic {
       }
    }
 
-   
-    /*
-     * Fonction exécutée automatiquement toutes les minutes par Jeedom
-      public static function cron() {*
-         foreach (eqLogic::byType(__CLASS__, true) as $MonitoGitHub) {
-            $MonitoGitHub->refreshData();
-         }
-      }
-     */
-
-    /*
-     * Fonction exécutée automatiquement toutes les 5 minutes par Jeedom
-      public static function cron5() {
-      }
-     */
-
-    /*
-     * Fonction exécutée automatiquement toutes les 10 minutes par Jeedom
-      public static function cron10() {
-      }
-     */
-    
-    /*
-     * Fonction exécutée automatiquement toutes les 15 minutes par Jeedom
-      public static function cron15() {
-      }
-     */
-    
-    /*
-     * Fonction exécutée automatiquement toutes les 30 minutes par Jeedom
-      public static function cron30() {
-      }
-     */
-    
-    /*
-     * Fonction exécutée automatiquement toutes les heures par Jeedom
-      public static function cronHourly() {
-      }
-     */
-
-    /*
-     * Fonction exécutée automatiquement tous les jours par Jeedom
-      public static function cronDaily() {
-      }
-     */
-
-
 
     /*     * *********************Méthodes d'instance************************* */
 
@@ -216,7 +169,7 @@ class MonitoGitHub extends eqLogic {
             break; 
 
          default:
-            log::add('MonitoGitHub', 'error', '### Erreur non référencée '.$status.' ###');
+            log::add('MonitoGitHub', 'error', '### Erreur non référencée : '.$status.' ###');
             return false;
             break; 
             
@@ -227,7 +180,7 @@ class MonitoGitHub extends eqLogic {
 
 
     /*    ----- fonction pour mettre à jour les valeurs à partir d'un array 
-        * dont les clé sont les logicalId des commandes
+        * dont les clé sont les logicalId des commandes (cf les array de classe)
         * contenant la clé status => 200 Ok si on doit remplir les données
     */
     public function updateCMDfromArray($data){
@@ -319,7 +272,7 @@ class MonitoGitHub extends eqLogic {
          case 'file':
             break;
             
-         Default:
+         default:
          log::add('MonitoGitHub','debug', '╠════ type survey not found ('.$typeSurv.')');
 
       }

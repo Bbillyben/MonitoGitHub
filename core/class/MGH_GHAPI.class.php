@@ -65,9 +65,9 @@ class MGH_GHAPI {
 
       $dataJson=json_decode($result,true);
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['last_commit_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson[0],array('commit','author','date')));
-      $data['last_commit_user']=MGH_GHAPI::gvfaKR($dataJson[0],array('commit','author','name'));
-      $data['last_commit_comment_cnt']=MGH_GHAPI::gvfaKR($dataJson[0],array('commit','comment_count'));
+      $data['last_commit_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('commit','author','date')));
+      $data['last_commit_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('commit','author','name'));
+      $data['last_commit_comment_cnt']=MGH_GHAPI::gvfaKR($dataJson,0,array('commit','comment_count'));
 
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ last_commit_date:'.$data['last_commit_date']);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ last_commit_user:'.$data['last_commit_user']);
@@ -116,9 +116,9 @@ class MGH_GHAPI {
 
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
       $data['pr_open_count']=count($dataJson);
-      $data['pr_open_user']=MGH_GHAPI::gvfaKR($dataJson[0],array('user','login'));
-      $data['pr_open_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson[0],array('created_at')));
-      $data['pr_open_title']=MGH_GHAPI::gvfaKR($dataJson[0],array('title'));
+      $data['pr_open_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('user','login'));
+      $data['pr_open_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
+      $data['pr_open_title']=MGH_GHAPI::gvfaKR($dataJson,0,array('title'));
 
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_open_count:'.$data['pr_open_count']);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_open_user:'.$data['pr_open_user']);
@@ -153,9 +153,9 @@ class MGH_GHAPI {
 
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
       $data['pr_closed_count']=count($dataJson);
-      $data['pr_closed_user']=MGH_GHAPI::gvfaKR($dataJson[0],array('user','login'));
-      $data['pr_closed_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson[0],array('closed_at')));
-      $data['pr_closed_title']=MGH_GHAPI::gvfaKR($dataJson[0],array('title'));
+      $data['pr_closed_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('user','login'));
+      $data['pr_closed_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('closed_at')));
+      $data['pr_closed_title']=MGH_GHAPI::gvfaKR($dataJson,0,array('title'));
 
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_closed_count:'.$data['pr_closed_count']);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_closed_user:'.$data['pr_closed_user']);
@@ -198,9 +198,9 @@ class MGH_GHAPI {
 
       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
       $data['fork_count']=count($dataJson);
-      $data['fork_name']=MGH_GHAPI::gvfaKR($dataJson[0],array('full_name'));
-      $data['fork_owner']=MGH_GHAPI::gvfaKR($dataJson[0],array('owner','login'));
-      $data['fork_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson[0],array('created_at')));
+      $data['fork_name']=MGH_GHAPI::gvfaKR($dataJson,0,array('full_name'));
+      $data['fork_owner']=MGH_GHAPI::gvfaKR($dataJson,0,array('owner','login'));
+      $data['fork_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
 
 
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ fork_count:'.$data['fork_count']);
@@ -257,8 +257,11 @@ class MGH_GHAPI {
 
    }
    // retourne une valeur à partir d'un array si la suite de clé exiiste sinon false
-   public static function gvfaKR($arr, $valArr){
-      $pointeur=$arr;
+   public static function gvfaKR($arr, $id, $valArr){
+      if(!is_array($arr) || !array_key_exists($id,$arr))return false;
+
+      $pointeur=$arr[$id];
+
       foreach($valArr as $val){
          if(is_array($pointeur) && array_key_exists($val,$pointeur)){
             $pointeur = $pointeur[$val];
