@@ -16,12 +16,12 @@ Permet de retrouver des information sur des repos github, que ce soit sur le git
 
 
 ### Pour tous les repo :
-* le nombre de PR open (limité à 100)
+* le nombre de PR open 
 * la date du dernier PR ouvert
 * l'utilisateur qui a ouvert le dernier PR
 * le titre du dernier PR ouvert
 
-* le nombre de PR fermé (limité à 100)
+* le nombre de PR fermé 
 * la date du dernier PR fermé
 * l'utilisateur qui a fermé le dernier PR
 * le titre du dernier PR
