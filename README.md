@@ -1,11 +1,72 @@
-# Template de plugin pour Jeedom
+# Monito GitHub plugin pour Jeedom
 
-Ce "template de plugin" sert de base à la réalisation de plugins pour **Jeedom**.
+<p align="center">
+  <img width="100" src="/plugin_info/MonitoGitHub_icon.png">
+</p>
 
-La documentation générale relative à la conception de plugin est consultable [ici](https://doc.jeedom.com/fr_FR/dev/). Dans le détail :   
-* [Utilisation du template de plugin](https://doc.jeedom.com/fr_FR/dev/plugin_template) : Le template de plugin est une base de plugin pour Jeedom qui doit être adaptée avec l'id de votre plugin et à laquelle il suffit d'ajouter vos propres fonctions. 
-* [Fichier info.json](https://doc.jeedom.com/fr_FR/dev/structure_info_json) : Intégré depuis la version 3.0 de Jeedom, le fichier **info.json** est obligatoire pour le bon fonctionnement des plugins et leur bon déploiement sur le Market Jeedom.
-* [Icône du plugin](https://doc.jeedom.com/fr_FR/dev/Icone_de_plugin) : Afin de pouvoir être publié sur le Market Jeedom, tout plugin doit disposer d’une icône. Attention à ne pas utiliser le même code couleur que les icônes des plugins Jeedom officiels.
-* [Widget du plugin](https://doc.jeedom.com/fr_FR/dev/widget_plugin) : Présentation des différentes manières d'inclure des widgets personnalisés au plugin.
-* [Documentation du plugin](https://doc.jeedom.com/fr_FR/dev/documentation_plugin) : Présentation de la mise en place d'une documentation car un bon plugin n'est rien sans documentation adéquate.
-* [Publication du plugin](https://doc.jeedom.com/fr_FR/dev/publication_plugin) : Description des pré-requis indispensables à la publication du plugin.
+Permet de retrouver des information sur des repos github, que ce soit sur le git en entier, un sous dossier ou encore un fichier spécifique
+
+# |Elements monitorable|
+
+### Pour tous les types :
+
+* la date du dernier commit
+* l'utilisateur qui a créer le dernier commit
+* le nbre de commentaire sur le dernier commit
+
+
+### Pour tous les repo :
+* le nombre de PR open (limité à 100)
+* la date du dernier PR ouvert
+* l'utilisateur qui a ouvert le dernier PR
+* le titre du dernier PR ouvert
+
+* le nombre de PR fermé (limité à 100)
+* la date du dernier PR fermé
+* l'utilisateur qui a fermé le dernier PR
+* le titre du dernier PR
+
+* le nombre de Fork
+* le nom du dernier Fork
+* l'utilisateur qui a créé le dernier Fork
+* la date du dernier Fork
+
+
+
+# |Configuration des Equipements|
+ créer un équipement par source à monitorer
+* __Nom de l'équipement__ 
+ * __Objet parent__ 
+ * __Catégorie__ 
+ Comme tout équipement classique
+ 
+## paramètres
+ex : https/github.com/TheOwner/TheRepo/blob/master/core/class/the.class.php
+
+ * __Owner__ : Le nom du propriétaire du Git (aka TheOwner)
+ * __repo__ : Le nom du repo Git (aka TheRepo)
+ * __Path__ : Le chemin vers la source à monitorer, relatif à la racine du git (ici /core/class/the.class.php)
+ * __Branche__ : la branche à monitoré (prendra par défaut la branche par défaut du git)
+ 
+ ## Identification 
+ 
+ Permet de renseigner des identifiants. 
+ l'utilisation d'un token est recommandé : 
+ * pour augmenter le nombre de requêtes par heure possible (de 50 à 5000)
+ * pour accéder au git privé
+ 
+  * __Utilisateur__ : Le nom de l'utilisateur - non utilisé, mais peut être utile pour de futurs développements
+  * __token__ : Le token généré pour identifier l'utilisateur, il lui faut les droits en lecture
+  
+   
+ ## Actualisation
+ 
+ Pour définir la fréquence d'actualisation des information de l'équipement
+ 
+ Fréquence d'actualisation : 
+ * __Manuelle__ : ne s'autoactualise pas => nécessité d'appeler la commande 'Update' de l'équipement
+ * __CRON XXX__ : s'actualiser tous les 'XXX' (minutes, heures, jour)
+ * __programmé__ : permet de définir un cron spécifique 
+ 
+
+ 
