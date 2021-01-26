@@ -31,7 +31,10 @@ Permet de retrouver des information sur des repos github, que ce soit sur le git
 * l'utilisateur qui a créé le dernier Fork
 * la date du dernier Fork
 
-
+* le nombre de Release
+* l'utilisateur qui a créé la dernière Release
+* la date de création de la dernière release
+* la date de publication de la dernière release
 
 # |Configuration des Equipements|
  créer un équipement par source à monitorer
