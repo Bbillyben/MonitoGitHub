@@ -43,7 +43,13 @@ class MonitoGitHub extends eqLogic {
       'fork_count'=>array('name'=>'Nbre de Fork','type'=>'info', 'subtype'=>'numeric'),
       'fork_name'=>array('name'=>'Dernier Fork Name','type'=>'info', 'subtype'=>'string'),
       'fork_owner'=>array('name'=>'Dernier Fork Owner','type'=>'info', 'subtype'=>'string'),
-      'fork_date'=>array('name'=>'Dernier Fork date','type'=>'info', 'subtype'=>'string')
+      'fork_date'=>array('name'=>'Dernier Fork date','type'=>'info', 'subtype'=>'string'),
+     
+      'release_count'=>array('name'=>'Nbre de Release','type'=>'info', 'subtype'=>'numeric'),
+      'release_owner'=>array('name'=>'Dernière Release Owner','type'=>'info', 'subtype'=>'string'),
+      'release_created_date'=>array('name'=>'Dernier Release date creation','type'=>'info', 'subtype'=>'string'),
+     'release_published_date'=>array('name'=>'Dernier Release date publication','type'=>'info', 'subtype'=>'string')
+     
    );
     /*     * *************************Attributs****************************** */
     
@@ -133,6 +139,15 @@ class MonitoGitHub extends eqLogic {
             }
             $this->updateCMDfromArray($data);
             log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates Fork');
+          
+          log::add('MonitoGitHub', 'debug', '║ ║ ╔══════════ Updates Releases');
+            $data=MGH_GHAPI::getRELEASE_infos($owner, $repo, $branch, $user, $token);
+            if(!$this->statusHandler($data['status'])){
+               log::add('MonitoGitHub', 'debug', '║ ║ ╚═══════════ ######## Request Status Error BREAK');
+               return;
+            }
+            $this->updateCMDfromArray($data);
+            log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates Release');
          
             break;
          case 'folder':
@@ -316,5 +331,3 @@ class MonitoGitHubCmd extends cmd {
 
     /*     * **********************Getteur Setteur*************************** */
 }
-
-

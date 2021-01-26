@@ -213,6 +213,46 @@ class MGH_GHAPI {
       return $data;
 
    }
+   public static function getRELEASE_infos($owner, $repo, $branch, $user, $token){
+      $data = array();
+      $data['status']=0;
+
+      // construction des headers
+      $headers = MGH_GHAPI::getBaseHeader($user, $token);
+      $headersA=[];
+      //construction de l'url avec les query
+      $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/releases';
+
+      $query='?per_page=1';
+      
+      $url.=$query;
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Releases URL :'.$url);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
+      
+       // construction de la requete
+       $ch = curl_init();
+       MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
+     
+     $result = curl_exec($ch);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
+
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
+      $dataJson=json_decode($result,true);
+
+      $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
+      $data['release_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
+      $data['release_owner']=MGH_GHAPI::gvfaKR($dataJson,0,array('author','login'));
+      $data['release_created_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
+     $data['release_published_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('published_at')));
+
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.$data['status']);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ release_count:'.$data['release_count']);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ release_owner:'.$data['release_owner']);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ release_created_date:'.$data['release_created_date']);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ forkrelease_published_date_date:'.$data['release_published_date']);
+     return $data;
+   }
 
 
    // utilitaire
@@ -318,5 +358,3 @@ class MGH_GHAPI {
   
    
 }
-
-
