@@ -24,7 +24,7 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
   }
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
-function CovidAttest_update() {
+function MonitoGitHub_update() {
 	 message::add('MonitoGitHub','mise à jour des equipements');
 	 foreach (eqLogic::byType("MonitoGitHub", true) as $eqLogic) {
 		$freq = $eqLogic->save();
