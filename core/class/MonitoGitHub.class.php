@@ -292,7 +292,7 @@ class MonitoGitHub extends eqLogic {
 
       }
       
-      log::add('MonitoGitHub', 'debug', '╚═══════════════════════ begin save ══════════════════════');
+      log::add('MonitoGitHub', 'debug', '╚═══════════════════════ End save ══════════════════════');
 
         
     }
