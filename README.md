@@ -16,25 +16,17 @@ Permet de retrouver des informations sur des repos github, que ce soit sur le gi
 
 
 ### Pour tous les repo :
-* le nombre de PR ouverts 
-* la date du dernier PR ouvert
-* l'utilisateur qui a ouvert le dernier PR
-* le titre du dernier PR ouvert
+| PR | Forks | Release |
+| --- | --- | --- |
+| * le nombre de PR ouverts  | * le nombre de Fork | * le nombre de Release |
+| * la date du dernier PR ouvert | * le nom du dernier Fork | * l'utilisateur qui a créé la dernière Release |
+| * l'utilisateur qui a ouvert le dernier PR | * l'utilisateur qui a créé le dernier Fork | * la date de création de la dernière release |
+| * le titre du dernier PR ouvert | * la date du dernier Fork | * la date de publication de la dernière release |
+| * le nombre de PR fermés |  |  |
+| * la date du dernier PR fermé |  |  |
+| * l'auteur du dernier PR fermé |  |  |
+| * le titre du dernier PR fermé |  |  |
 
-* le nombre de PR fermés
-* la date du dernier PR fermé
-* l'auteur du dernier PR fermé
-* le titre du dernier PR fermé
-
-* le nombre de Fork
-* le nom du dernier Fork
-* l'utilisateur qui a créé le dernier Fork
-* la date du dernier Fork
-
-* le nombre de Release
-* l'utilisateur qui a créé la dernière Release
-* la date de création de la dernière release
-* la date de publication de la dernière release
 
 # |Configuration des Equipements|
  créer un équipement par source à monitorer
