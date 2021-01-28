@@ -48,8 +48,13 @@ ex : https/github.com/TheOwner/TheRepo/blob/master/core/class/the.class.php
 
  * __Owner__ : Le nom du propriétaire du Git (aka TheOwner)
  * __repo__ : Le nom du repo Git (aka TheRepo)
- * __Path__ : Le chemin vers la source à monitorer, relatif à la racine du git (ici /core/class/the.class.php)
- * __Branche__ : la branche a monitorer (prendra par défaut la branche par défaut du git)
+ * __Path__ : -optionnel- Le chemin vers la source à monitorer, relatif à la racine du git (ici /core/class/the.class.php).
+ 
+      > si vide l'équipement sera de type repos global sera surveillé (cf Elements monitorable)
+      > si fini par '/' l'équipement sera de type folder (pour le moment même surveillance que type file)
+      > si fini par autre chose, l'équipement sera de type file
+      
+ * __Branche__ : -optionnel- la branche a monitorer (si vide prendra par défaut la branche par défaut du git)
  
  ## Identification 
  
