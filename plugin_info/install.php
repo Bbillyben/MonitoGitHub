@@ -25,7 +25,7 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
 // Fonction exécutée automatiquement après la mise à jour du plugin
 function MonitoGitHub_update() {
-	 message::add('MonitoGitHub','mise à jour des equipements');
+	  log::add(('MonitoGitHub','debug','=============  mise à jour des equipements suite à update plugin =============');
 	 foreach (eqLogic::byType("MonitoGitHub", true) as $eqLogic) {
 		$freq = $eqLogic->save();
 	 }
