@@ -9,23 +9,24 @@ Permet de retrouver des informations sur des repos github, que ce soit sur le gi
 # |Elements monitorable|
 
 ### Pour tous les types :
-
-* la date du dernier commit
-* l'utilisateur qui a créé le dernier commit
-* le nbre de commentaire sur le dernier commit
+| Commit |
+| --- |
+| la date du dernier commit |
+| l'utilisateur qui a créé le dernier commit |
+| le nbre de commentaire sur le dernier commit |
 
 
 ### Pour tous les repo :
 | PR | Forks | Release |
 | --- | --- | --- |
-| * le nombre de PR ouverts  | * le nombre de Fork | * le nombre de Release |
-| * la date du dernier PR ouvert | * le nom du dernier Fork | * l'utilisateur qui a créé la dernière Release |
-| * l'utilisateur qui a ouvert le dernier PR | * l'utilisateur qui a créé le dernier Fork | * la date de création de la dernière release |
-| * le titre du dernier PR ouvert | * la date du dernier Fork | * la date de publication de la dernière release |
-| * le nombre de PR fermés |  |  |
-| * la date du dernier PR fermé |  |  |
-| * l'auteur du dernier PR fermé |  |  |
-| * le titre du dernier PR fermé |  |  |
+| le nombre de PR ouverts  | le nombre de Fork | le nombre de Release |
+| la date du dernier PR ouvert | le nom du dernier Fork | l'utilisateur qui a créé la dernière Release |
+| l'utilisateur qui a ouvert le dernier PR | l'utilisateur qui a créé le dernier Fork | la date de création de la dernière release |
+| le titre du dernier PR ouvert | la date du dernier Fork | la date de publication de la dernière release |
+| le nombre de PR fermés |  |  |
+| la date du dernier PR fermé |  |  |
+| l'auteur du dernier PR fermé |  |  |
+| le titre du dernier PR fermé |  |  |
 
 
 # |Configuration des Equipements|
