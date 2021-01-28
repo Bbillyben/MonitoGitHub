@@ -265,7 +265,7 @@ class MonitoGitHub extends eqLogic {
 
  // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement 
     public function preSave() {
-      log::add('MonitoGitHub', 'debug', '╔═══════════════════════ begin save ══════════════════════');
+      log::add('MonitoGitHub', 'debug', '╔═══════════════════════ begin save :'.$this->getHumanName().' ══════════════════════');
     }
 
  // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement 
