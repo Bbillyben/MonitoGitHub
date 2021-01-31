@@ -79,6 +79,47 @@ class MGH_GHAPI {
       return $data;
       
    }
+   public static function getISSUES_infos($owner, $repo, $branch, $user, $token){
+   
+      //construction de l'url avec les query
+      $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/issues';
+
+      $query='?per_page=1&sort=created&direction=desc&state=open';
+   
+      $url.=$query;
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
+
+      $data['status']=$dataCmd['status'];
+      $data['issue_open_count']= MGH_GHAPI::extractPageNum($dataCmd['header'],'link'); //count($dataJson);
+      $data['issue_open_user']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('user','login'));
+      $data['issue_open_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('created_at')));
+      $data['issue_open_title']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('title'));
+      //$data['issue_open_type']=MGH_GHAPI::gvfaKR(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('labels')),0,array('name'));
+      $data['issue_open_type']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('labels',0,'name'));
+
+
+      // pour les closed
+      //construction de l'url avec les query
+      $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/issues';
+
+      $query='?per_page=1&sort=created&direction=desc&state=closed';
+      
+      $url.=$query;
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
+
+      $data['status']=$dataCmd['status'];
+      $data['issue_closed_count']= MGH_GHAPI::extractPageNum($dataCmd['header'],'link'); //count($dataJson);
+      $data['issue_closed_user']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('user','login'));
+      $data['issue_closed_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('closed_at')));
+      $data['issue_closed_title']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('title'));
+      $data['issue_closed_type']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('labels',0,'name'));
+
+      MGH_GHAPI::printData($data);
+
+      return $data;
+      
+   }
+
 
    public static function getFORK_infos($owner, $repo, $branch, $user, $token){
       //construction de l'url avec les query
