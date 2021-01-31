@@ -17,6 +17,7 @@ Permet de retrouver des informations sur des repos github, que ce soit sur le gi
 
 
 ### Pour tous les repo :
+
 | PR | Forks | Release | Issues |
 | --- | --- | --- | --- |
 | le nombre de PR ouverts  | le nombre de Fork | le nombre de Release | nbre d'issues ouverte |
@@ -29,6 +30,7 @@ Permet de retrouver des informations sur des repos github, que ce soit sur le gi
 | le titre du dernier PR fermé |  |   | utilisateur de la dernière issues fermée |
 |  |  |  |  titre de la dernière issue fermée |
 |  |  |  |  type de la dernière issue fermée |
+
 
 # |Configuration des Equipements|
  créer un équipement par source à monitorer
