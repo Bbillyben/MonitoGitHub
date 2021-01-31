@@ -22,110 +22,41 @@ require_once __DIR__  . '/../../../../core/php/core.inc.php';
 class MGH_GHAPI {
 
    public static function getCOMMIT_infos($owner, $repo, $path, $branch, $user, $token){
-      $data = array();
-      $data['status']=0;
-
-      // construction des headers
-      $headers = MGH_GHAPI::getBaseHeader($user, $token);
-      $headersA=[];
-
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/commits';
       $query='?per_page=1';
 
-      if ($path<>''){
-         $query .= '&path='.$path;
-      }
-      if ($branch<>''){
-         $query .= '&sha='.$branch;
-      }
+      if ($path<>'')$query .= '&path='.$path;
+      if ($branch<>'')$query .= '&sha='.$branch;
 
       $url.=$query;
-      
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
 
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Commits URL :'.$url);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
-
-      // construction de la requete
-      $ch = curl_init();
-      MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
-
-      /* execution de la requete */
-      $result = curl_exec($ch);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
-      
-      /* gestion de l'erreur */
-      if (curl_errno($ch)) {
-         log::add('MonitoGitHub', 'error', 'Error:'.curl_errno($ch)." / ".curl_error($ch));
-         log::add('MonitoGitHub', 'debug', '║ ║ ╟─ Error:'.curl_errno($ch)." / ".curl_error($ch));
-      }
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
-
-      $dataJson=json_decode($result,true);
-// nbre de page
-      $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['last_commit_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('commit','author','date')));
-      $data['last_commit_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('commit','author','name'));
-      $data['last_commit_comment_cnt']=MGH_GHAPI::gvfaKR($dataJson,0,array('commit','comment_count'));
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ last_commit_date:'.$data['last_commit_date']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ last_commit_user:'.$data['last_commit_user']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ last_commit_comment_cnt:'.$data['last_commit_comment_cnt']);
+      $data['status']=$dataCmd['status'];
+      $data['last_commit_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('commit','author','date')));
+      $data['last_commit_user']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('commit','author','name'));
+      $data['last_commit_comment_cnt']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('commit','comment_count'));
+      MGH_GHAPI::printData($data);
 
       return $data;
    }
 
    public static function getPR_infos($owner, $repo, $branch, $user, $token){
-      $data = array();
-      $data['status']=0;
-
-      // construction des headers
-      $headers = MGH_GHAPI::getBaseHeader($user, $token);
-      $headersA=[];
+   
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/pulls';
 
       $query='?per_page=1&state=open&sort=created&direction=desc';
       
-      if ($branch<>''){
-         $query .= '&base='.$branch;
-      }
+      if ($branch<>'')$query .= '&base='.$branch;
       $url.=$query;
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── PR Open URL :'.$url);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
-      
-       // construction de la requete
-       $ch = curl_init();
-       MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
- 
-       /* execution de la requete */
-       $result = curl_exec($ch);
-       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
-       
-       /* gestion de l'erreur */
-       if (curl_errno($ch)) {
-          log::add('MonitoGitHub', 'error', 'Error:'.curl_errno($ch)." / ".curl_error($ch));
-          log::add('MonitoGitHub', 'debug', '║ ║ ╟─ Error:'.curl_errno($ch)." / ".curl_error($ch));
-       }
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
 
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
-
-      $dataJson=json_decode($result,true);
-
-      $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['pr_open_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
-      $data['pr_open_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('user','login'));
-      $data['pr_open_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
-      $data['pr_open_title']=MGH_GHAPI::gvfaKR($dataJson,0,array('title'));
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_open_count:'.$data['pr_open_count']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_open_user:'.$data['pr_open_user']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_open_date:'.$data['pr_open_date']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_open_title:'.$data['pr_open_title']);
-
+      $data['status']=$dataCmd['status'];
+      $data['pr_open_count']= MGH_GHAPI::extractPageNum($dataCmd['header'],'link'); //count($dataJson);
+      $data['pr_open_user']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('user','login'));
+      $data['pr_open_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('created_at')));
+      $data['pr_open_title']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('title'));
 
       // pour les closed
       //construction de l'url avec les query
@@ -133,129 +64,99 @@ class MGH_GHAPI {
 
       $query='?state=closed&sort=created&direction=desc&per_page=1';
       
-      if ($branch<>''){
-         $query .= '&base='.$branch;
-      }
+      if ($branch<>'')$query .= '&base='.$branch;
       $url.=$query;
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── PR Closed URL :'.$url);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
-      $headersA=[];
-      // construction de la requete
-      $ch = curl_init();
-      MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
 
-      /* execution de la requete */
-      $result = curl_exec($ch);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
+      $data['status']=$dataCmd['status'];
+      $data['pr_closed_count']= MGH_GHAPI::extractPageNum($dataCmd['header'],'link'); //count($dataJson);
+      $data['pr_closed_user']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('user','login'));
+      $data['pr_closed_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('closed_at')));
+      $data['pr_closed_title']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('title'));
 
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
-
-      $dataJson=json_decode($result,true);
-
-      $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['pr_closed_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
-      $data['pr_closed_user']=MGH_GHAPI::gvfaKR($dataJson,0,array('user','login'));
-      $data['pr_closed_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('closed_at')));
-      $data['pr_closed_title']=MGH_GHAPI::gvfaKR($dataJson,0,array('title'));
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_closed_count:'.$data['pr_closed_count']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_closed_user:'.$data['pr_closed_user']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_closed_date:'.$data['pr_closed_date']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ pr_closed_title:'.$data['pr_closed_title']);
-
-
+      MGH_GHAPI::printData($data);
 
       return $data;
-
+      
    }
 
    public static function getFORK_infos($owner, $repo, $branch, $user, $token){
-      $data = array();
-      $data['status']=0;
-
-      // construction des headers
-      $headers = MGH_GHAPI::getBaseHeader($user, $token);
-      $headersA=[];
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/forks';
 
       $query='?sort=newest&per_page=1';
       
       $url.=$query;
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── FORK URL :'.$url);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
-      
-       // construction de la requete
-       $ch = curl_init();
-       MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
 
-        /* execution de la requete */
-      $result = curl_exec($ch);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
-      $dataJson=json_decode($result,true);
-
-      $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['fork_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
-      $data['fork_name']=MGH_GHAPI::gvfaKR($dataJson,0,array('full_name'));
-      $data['fork_owner']=MGH_GHAPI::gvfaKR($dataJson,0,array('owner','login'));
-      $data['fork_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
-
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ fork_count:'.$data['fork_count']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ fork_name:'.$data['fork_name']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ fork_owner:'.$data['fork_owner']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ fork_date:'.$data['fork_date']);
-
-      return $data;
+      $data['status']=$dataCmd['status'];
+      $data['fork_count']= MGH_GHAPI::extractPageNum($dataCmd['header'],'link'); //count($dataJson);
+      $data['fork_name']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('full_name'));
+      $data['fork_owner']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('owner','login'));
+      $data['fork_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('created_at')));
+      MGH_GHAPI::printData($data);
+     return $data;
 
    }
    public static function getRELEASE_infos($owner, $repo, $branch, $user, $token){
-      $data = array();
-      $data['status']=0;
-
-      // construction des headers
-      $headers = MGH_GHAPI::getBaseHeader($user, $token);
-      $headersA=[];
+   
       //construction de l'url avec les query
       $url='https://api.github.com/repos/'.$owner.'/'.$repo.'/releases';
 
       $query='?per_page=1';
       
       $url.=$query;
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Releases URL :'.$url);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
-      
-       // construction de la requete
-       $ch = curl_init();
-       MGH_GHAPI::configureBasecURL($ch, $url, $headers, $headersA);
-     
-     $result = curl_exec($ch);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
+      $dataCmd=MGH_GHAPI::computeCMD($url,$user,$token);
 
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
-      $dataJson=json_decode($result,true);
-
-      $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
-      $data['release_count']= MGH_GHAPI::extractPageNum($headersA,'link'); //count($dataJson);
-      $data['release_owner']=MGH_GHAPI::gvfaKR($dataJson,0,array('author','login'));
-      $data['release_created_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('created_at')));
-     $data['release_published_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataJson,0,array('published_at')));
-
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.$data['status']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ release_count:'.$data['release_count']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ release_owner:'.$data['release_owner']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ release_created_date:'.$data['release_created_date']);
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ forkrelease_published_date_date:'.$data['release_published_date']);
+      $data['status']=$dataCmd['status'];
+      $data['release_count']= MGH_GHAPI::extractPageNum($dataCmd['header'],'link'); //count($dataJson);
+      $data['release_owner']=MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('author','login'));
+      $data['release_created_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('created_at')));
+     $data['release_published_date']=MGH_GHAPI::formatDate(MGH_GHAPI::gvfaKR($dataCmd['result'],0,array('published_at')));
+     MGH_GHAPI::printData($data);
      return $data;
    }
 
 
    // utilitaire
+   // execution de la commande 
+   // return un array avec status, header et result de la réponse
+   public static function computeCMD($cmd,$user,$token){
+      $data = array();
+      $data['status']=0;
+      $headers = MGH_GHAPI::getBaseHeader($user, $token);
+      $headersA=[];
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Commande :'.$cmd);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─── Headers requete :'.implode(" | ",$headers));
+
+      $ch = curl_init();
+      MGH_GHAPI::configureBasecURL($ch, $cmd, $headers, $headersA);
+       /* execution de la requete */
+       $result = curl_exec($ch);
+       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ headers Answer :'.json_encode($headersA));
+       
+       
+       /* gestion de l'erreur */
+       if (curl_errno($ch)) {
+          log::add('MonitoGitHub', 'error', 'Error:'.curl_errno($ch)." / ".curl_error($ch));
+          log::add('MonitoGitHub', 'debug', '║ ║ ╟─ Error:'.curl_errno($ch)." / ".curl_error($ch));
+       }
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
+      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
+
+       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
+       $data['header']=$headersA;
+       $data['result']=json_decode($result,true);
+
+       return $data;
+
+   }
+   // permet d'imprimer dans le debug les résultats
+   public static function printData($data){
+      foreach($data as $k=>$v){
+         log::add('MonitoGitHub', 'debug', "║ ║ ╟─ $k : $v");
+      }
+   }
    // pour avoir le header de base
    public static function getBaseHeader($user, $token){
       $headers = array();
