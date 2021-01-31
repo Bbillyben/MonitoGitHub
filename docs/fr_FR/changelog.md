@@ -1,3 +1,6 @@
+#### 31 Jan 2021
+* ajout des issues sur les repos (nbre total, titre, user, date, type) ouvertes et fermées
+
 #### 26 Jan 2021
 * ajout suivi release sur les repos
 

@@ -40,6 +40,7 @@ class MonitoGitHub extends eqLogic {
       'pr_closed_user'=>array('name'=>'Dernier PR fermé Utilsateur','type'=>'info', 'subtype'=>'string'),
       'pr_closed_date'=>array('name'=>'Dernier PR fermé date','type'=>'info', 'subtype'=>'string'),
       'pr_closed_title'=>array('name'=>'Dernier PR fermé Title','type'=>'info', 'subtype'=>'string'),
+
       'fork_count'=>array('name'=>'Nbre de Fork','type'=>'info', 'subtype'=>'numeric'),
       'fork_name'=>array('name'=>'Dernier Fork Name','type'=>'info', 'subtype'=>'string'),
       'fork_owner'=>array('name'=>'Dernier Fork Owner','type'=>'info', 'subtype'=>'string'),
@@ -48,7 +49,20 @@ class MonitoGitHub extends eqLogic {
       'release_count'=>array('name'=>'Nbre de Release','type'=>'info', 'subtype'=>'numeric'),
       'release_owner'=>array('name'=>'Dernière Release Owner','type'=>'info', 'subtype'=>'string'),
       'release_created_date'=>array('name'=>'Dernier Release date creation','type'=>'info', 'subtype'=>'string'),
-     'release_published_date'=>array('name'=>'Dernier Release date publication','type'=>'info', 'subtype'=>'string')
+     'release_published_date'=>array('name'=>'Dernier Release date publication','type'=>'info', 'subtype'=>'string'),
+
+     'issue_open_count'=>array('name'=>'Nbre issues ouvertes','type'=>'info', 'subtype'=>'numeric'),
+      'issue_open_user'=>array('name'=>'Dernier issue Utilsateur','type'=>'info', 'subtype'=>'string'),
+      'issue_open_date'=>array('name'=>'Dernier issue ouvert date','type'=>'info', 'subtype'=>'string'),
+      'issue_open_title'=>array('name'=>'Dernier issue Title','type'=>'info', 'subtype'=>'string'),
+      'issue_open_type'=>array('name'=>'Dernier issue Type','type'=>'info', 'subtype'=>'string'),
+
+      'issue_closed_count'=>array('name'=>'Nbre issues fermées','type'=>'info', 'subtype'=>'numeric'),
+      'issue_closed_user'=>array('name'=>'Dernier issue fermé Utilsateur','type'=>'info', 'subtype'=>'string'),
+      'issue_closed_date'=>array('name'=>'Dernier issue fermé date','type'=>'info', 'subtype'=>'string'),
+      'issue_closed_title'=>array('name'=>'Dernier issue fermé Title','type'=>'info', 'subtype'=>'string'),
+      'issue_closed_type'=>array('name'=>'Dernier issue fermé Type','type'=>'info', 'subtype'=>'string')
+
      
    );
     /*     * *************************Attributs****************************** */
@@ -148,6 +162,15 @@ class MonitoGitHub extends eqLogic {
             }
             $this->updateCMDfromArray($data);
             log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates Release');
+
+            log::add('MonitoGitHub', 'debug', '║ ║ ╔══════════ Updates Issues');
+            $data=MGH_GHAPI::getISSUES_infos($owner, $repo, $branch, $user, $token);
+            if(!$this->statusHandler($data['status'])){
+               log::add('MonitoGitHub', 'debug', '║ ║ ╚═══════════ ######## Request Status Error BREAK');
+               return;
+            }
+            $this->updateCMDfromArray($data);
+            log::add('MonitoGitHub', 'debug', '║ ║ ╚══════════ End Updates Issues');
          
             break;
          case 'folder':
