@@ -221,7 +221,7 @@ class MGH_GHAPI {
       {
          $len = strlen($header);
         
-        $header= preg_replace("/HTTP\/[2]+/","HTTP:",$header);
+        $header= preg_replace("/HTTP\/[0-9\.]+ /","HTTP:",$header);
           
          $header = explode(':', $header, 2);
          if (count($header) < 2) // ignore invalid headers
