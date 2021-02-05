@@ -182,10 +182,10 @@ class MGH_GHAPI {
           log::add('MonitoGitHub', 'error', 'Error:'.curl_errno($ch)." / ".curl_error($ch));
           log::add('MonitoGitHub', 'debug', '║ ║ ╟─ Error:'.curl_errno($ch)." / ".curl_error($ch));
        }
-      log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'status')[0]);
+      //log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'http')[0]);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
 
-       $data['status']=MGH_GHAPI::gvfa($headersA,'status')[0];
+       $data['status']=MGH_GHAPI::gvfa($headersA,'http')[0];
        $data['header']=$headersA;
        $data['result']=json_decode($result,true);
 
@@ -220,6 +220,9 @@ class MGH_GHAPI {
       function($curl, $header) use (&$headersA)
       {
          $len = strlen($header);
+        
+        $header= preg_replace("/HTTP\/[0-9\.]+ /","HTTP:",$header);
+          
          $header = explode(':', $header, 2);
          if (count($header) < 2) // ignore invalid headers
             return $len;
