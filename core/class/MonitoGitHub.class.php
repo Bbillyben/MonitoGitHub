@@ -190,18 +190,18 @@ class MonitoGitHub extends eqLogic {
      // status handler pour prendre les retours des requetes
      public function statusHandler($status){
       switch(strtoupper($status)){
-         case "200 OK":
+         case "200":
             return true;
             break;
-         case "404 NOT FOUND":
+         case "404":
             log::add('MonitoGitHub', 'error', '### Erreur, repo non trouvé ou privé ###');
             return false;
             break;  
-         case '401 UNAUTHORIZED':
+         case '401':
             log::add('MonitoGitHub', 'error', '### Utilisateur non enregistré - vérifiez le token ###');
             return false;
             break; 
-         case '403 FORBIDDEN':
+         case '403':
             log::add('MonitoGitHub', 'error', '### Accès non authorisé ###');
             return false;
             break; 
