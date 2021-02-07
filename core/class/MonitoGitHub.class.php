@@ -222,8 +222,7 @@ class MonitoGitHub extends eqLogic {
         * contenant la clé status => 200 Ok si on doit remplir les données
     */
     public function updateCMDfromArray($data){
-      if($data['status']=='200 OK'){
-
+     
          foreach($data as $logId => $val){
             if($logId=='status')continue;
             $monitoGHcmd = $this->getCmd(null, $logId);
@@ -234,9 +233,6 @@ class MonitoGitHub extends eqLogic {
             }
 
          }
-
-      }
-
      
     }
    /*    ----- fonction pour créer les commande à partir des array de définition de la classe 
