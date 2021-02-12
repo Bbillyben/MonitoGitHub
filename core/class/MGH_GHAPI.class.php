@@ -185,7 +185,7 @@ class MGH_GHAPI {
       //log::add('MonitoGitHub', 'debug', '║ ║ ╟─ status:'.MGH_GHAPI::gvfa($headersA,'http')[0]);
       log::add('MonitoGitHub', 'debug', '║ ║ ╟─ x-ratelimit-remaining :'.MGH_GHAPI::gvfa($headersA,'x-ratelimit-remaining')[0]);
 
-       $data['status']=MGH_GHAPI::gvfa($headersA,'http')[0];
+       $data['status']=curl_getinfo($ch)['http_code'];
        $data['header']=$headersA;
        $data['result']=json_decode($result,true);
 
@@ -221,7 +221,7 @@ class MGH_GHAPI {
       {
          $len = strlen($header);
         
-        $header= preg_replace("/HTTP\/[0-9\.]+ /","HTTP:",$header);
+        //$header= preg_replace("/HTTP\/[0-9\.]+ /","HTTP:",$header);
           
          $header = explode(':', $header, 2);
          if (count($header) < 2) // ignore invalid headers
